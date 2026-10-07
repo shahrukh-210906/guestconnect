@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {validateData,reminderDue} from './validation.js';import {seed} from '../src/seed.js';
+test('initial campus data is valid',()=>assert.equal(validateData(seed),seed));
+test('checklist accepts completed tasks and rejects duplicate IDs',()=>{const d=structuredClone(seed);d.events[0].checklist=[{id:'task1',text:'Brief drivers',done:true}];assert.equal(validateData(d),d);d.events[0].checklist.push({...d.events[0].checklist[0]});assert.throws(()=>validateData(d))});
+test('reject orphan and duplicate assignments',()=>{const d=structuredClone(seed);d.events[0].assignments[0].guestId='missing';assert.throws(()=>validateData(d));const s=structuredClone(seed);s.events[0].assignments.push(s.events[0].assignments[0]);assert.throws(()=>validateData(s))});
+test('arranged transport requires driver and vehicle',()=>{const d=structuredClone(seed);d.events[0].assignments[0].transport.driver='';assert.throws(()=>validateData(d))});
+test('reminders respect three-day window and last reminder',()=>{const now=Date.now(),i={delivery:'Sent',sentAt:new Date(now-4*86400000).toISOString()};assert.equal(reminderDue(i,now),true);assert.equal(reminderDue({...i,lastReminderAt:new Date(now-86400000).toISOString()},now),false);assert.equal(reminderDue({...i,delivery:'Demo draft'},now),false)});

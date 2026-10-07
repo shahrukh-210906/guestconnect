@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+server/data.json
+*.log
+.npm-cache/
+artifact-build/
+
+server/.neurolog-outbox.json*

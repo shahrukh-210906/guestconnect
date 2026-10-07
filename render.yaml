@@ -1,0 +1,19 @@
+# Deploy the frontend and API together as one Render web service.
+services:
+  - type: web
+    name: guestconnect
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.15.0
+      - key: API_KEY
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+# Supply the Atlas connection string during Blueprint setup. Add email-provider secrets in Render.
